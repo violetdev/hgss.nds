@@ -47,7 +47,7 @@ with open('new.nds', 'rb') as f:
     f.close()
 
 # Header
-PARTY_OFFSET = 0x2889D0 * 2 # PARTY_OFFSET = 0x98 * 2
+PARTY_OFFSET = 0x2889D0 * 2 # PARTY_OFFSET = 0x98 * 2, PARTY_OFFSET = 0x288A1C * 2, (Depends on save type and/or progress)
 PARTY_LENGTH = 472
 PV = save[PARTY_OFFSET:PARTY_OFFSET+8]
 PV = int(PV, 16).to_bytes(4, 'little').hex()
@@ -76,7 +76,6 @@ for i in range(0, len(ENCRYPTED), 4):
     msg, seed = crypt(ENCRYPTED[i:i+4], seed)
     # print(ENCRYPTED[i:i+4], '-->', msg, seed)
     UNENCRYPTED += msg
-
 A, B, C, D = invOrderBlocks(shift_value, UNENCRYPTED[0:64], UNENCRYPTED[64:128], UNENCRYPTED[128:192], UNENCRYPTED[192:256])
 UNENCRYPTED = A + B + C + D
 
@@ -93,7 +92,7 @@ for i in range(2**32):
     newPV = hex(i)[2:].zfill(8)
     p1, p2 = int(newPV[:4], 16), int(newPV[4:], 16)
     if p ^ s ^ p1 ^ p2 < 8 and i % 25 == 10:
-        shift_value = getShiftValue(int(newPV, 16).to_bytes(4, 'little').hex())
+        shift_value = getShiftValue(newPV)
         break
 ####
 
